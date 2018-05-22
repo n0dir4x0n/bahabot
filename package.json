@@ -1,0 +1,16 @@
+{
+  "name": "knexsample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./dao/test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "knex": "^0.14.6",
+    "pg": "^7.4.3"
+  }
+}

@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  node:
+    image: node:carbon
+    # env_file:
+      # - .ucell-dev.env
+    # ports:
+      # - '8080:8080'
+#      - '9229:9229'
+      # - '5858:5858'
+    # depends_on:
+    #   - db
+    #   - redis
+    #   - mongodb
+    # links:
+    #   - db
+    #   - redis
+    #   - mongodb
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+    command: sh -c "./wait-for-it.sh rabbitmq:5672 -- npm run debug"
+  db:
+    image: postgres:latest
+    env_file:
+      - .dev.env
+    # volumes:
+    #   - ./.data/db/.data:/var/lib/mysql
+    #   - ./.data/db/conf.d:/etc/mysql/conf.d
+    #   - ./.data/log:/var/log/container
+    ports:
+      - '5432:5432'
