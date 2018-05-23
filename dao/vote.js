@@ -38,6 +38,32 @@ class VoteDao {
   }
 
   /**
+   * Get list by specialgroup
+   * @param specialgroup
+   * @return {Promise<*>}
+   */
+  static async getListBySpecialGroup(specialgroup) {
+    const votes_arr = await dao.knex
+      .select()
+      .from('votes')
+      .where({specialgroup});
+    return votes_arr.map(vote => new Vote(vote));
+  }
+  
+   /**
+   * Get channels list by specialgroup
+   * @param specialgroup
+   * @return {Promise<*>}
+   */
+  static async getChannelsListBySpecialGroup(specialgroup) {
+    const votes_arr = await dao.knex
+      .select('channel')
+      .from('votes')
+      .where({specialgroup});
+      return votes_arr.map(voteObj=> voteObj.channel );
+  }
+
+  /**
    * Get person by id
    * @param id
    * @return {Promise<*>}

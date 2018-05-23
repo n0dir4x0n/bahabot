@@ -1,4 +1,4 @@
-const AnnouncementDao = require('./vote');
-AnnouncementDao.create({username: 'dockerized'}).then((result)=>{
+const Vote = require('./vote');
+Vote.getChannelsListBySpecialGroup('gggg').then((result)=>{
     console.log(result)
 })
