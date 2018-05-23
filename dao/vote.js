@@ -1,13 +1,20 @@
 const dao = require('./base');
 class Vote {
-  constructor({id, username, specialgroup, channel, url, votetext}) {
+  constructor({
+    id,
+    username,
+    specialgroup,
+    channel,
+    url,
+    votetext
+  }) {
     this.id = id;
     this.username = username;
     this.specialgroup = specialgroup;
     this.channel = channel;
     this.url = url;
     this.votetext = votetext;
-   }
+  }
 }
 
 class VoteDao {
@@ -20,9 +27,23 @@ class VoteDao {
    * @param email
    * @return {Promise<*>}
    */
-  static async create({id, username, specialgroup, channel, url, votetext}) {
+  static async create({
+    id,
+    username,
+    specialgroup,
+    channel,
+    url,
+    votetext
+  }) {
     return await dao.knex
-      .insert({id, username, specialgroup, channel, url, votetext})
+      .insert({
+        id,
+        username,
+        specialgroup,
+        channel,
+        url,
+        votetext
+      })
       .from('votes')
   }
 
@@ -46,11 +67,13 @@ class VoteDao {
     const votes_arr = await dao.knex
       .select()
       .from('votes')
-      .where({specialgroup});
+      .where({
+        specialgroup
+      });
     return votes_arr.map(vote => new Vote(vote));
   }
-  
-   /**
+
+  /**
    * Get channels list by specialgroup
    * @param specialgroup
    * @return {Promise<*>}
@@ -59,8 +82,22 @@ class VoteDao {
     const votes_arr = await dao.knex
       .select('channel')
       .from('votes')
-      .where({specialgroup});
-      return votes_arr.map(voteObj=> voteObj.channel );
+      .where({ specialgroup });
+    return votes_arr.map(vote => vote.channel);
+  }
+
+  static async getVoteList() {
+    const votes_arr = await dao.knex
+      .select()
+      .from('votes')
+      .orderBy('vip', 'desc');
+    return votes_arr.map((vote) => {
+      return {
+        chanel: vote.channel,
+        url: vote.url,
+        text: vote.votetext
+      }
+    });
   }
 
   /**
@@ -72,31 +109,45 @@ class VoteDao {
     const data = await dao.knex
       .select()
       .from('votes')
-      .where({ id })
+      .where({
+        id
+      })
       .first();
     return new Vote(data);
   }
 
-  
+
   static async updateVIP(username, vip) {
     return dao.knex
-      .update({ vip })
+      .update({
+        vip
+      })
       .from('votes')
-      .where({ username })
+      .where({
+        username
+      })
   }
 
   static async activateByChannel(channel) {
     return dao.knex
-      .update({isactive: true})
+      .update({
+        isactive: true
+      })
       .from('votes')
-      .where({ channel })
+      .where({
+        channel
+      })
   }
 
   static async deactivateByChannel(channel) {
     return dao.knex
-      .update({isactive: false})
+      .update({
+        isactive: false
+      })
       .from('votes')
-      .where({ channel })
+      .where({
+        channel
+      })
   }
 
   /**
@@ -109,11 +160,25 @@ class VoteDao {
    * @param email
    * @return {Promise<*>}
    */
-  static async update(id, { name, date_of_birth, address, country, email }) {
+  static async update(id, {
+    name,
+    date_of_birth,
+    address,
+    country,
+    email
+  }) {
     return dao.knex
-      .update({ name, date_of_birth, address, country, email })
+      .update({
+        name,
+        date_of_birth,
+        address,
+        country,
+        email
+      })
       .from('votes')
-      .where({ id })
+      .where({
+        id
+      })
   }
 
   /**
@@ -124,7 +189,9 @@ class VoteDao {
   static async delete(id) {
     return dao.knex
       .from('votes')
-      .where({ id })
+      .where({
+        id
+      })
       .del();
   }
 
@@ -151,7 +218,9 @@ class VoteDao {
   static async getByCountry(country) {
     return dao.knex
       .from('votes')
-      .where({ country })
+      .where({
+        country
+      })
   }
 
   /**

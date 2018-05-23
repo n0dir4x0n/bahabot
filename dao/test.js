@@ -3,6 +3,10 @@ const Vote = require('./vote');
 //     console.log(result)
 // })
 
-Vote.deactivate('jjj').then((res)=>{
-    console.log(res)
-})
+// Vote.deactivate('jjj').then((res)=>{
+//     console.log(res)
+// })
+
+Vote.getVoteList().then((res)=>{
+    console.log(res);
+});
