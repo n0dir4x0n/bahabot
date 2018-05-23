@@ -74,7 +74,29 @@ class VoteDao {
       .from('votes')
       .where({ id })
       .first();
-    return new Person(data);
+    return new Vote(data);
+  }
+
+  
+  static async updateVIP(username, vip) {
+    return dao.knex
+      .update({ vip })
+      .from('votes')
+      .where({ username })
+  }
+
+  static async activate(username) {
+    return dao.knex
+      .update({isactive: true})
+      .from('votes')
+      .where({ username })
+  }
+
+  static async deactivate(username) {
+    return dao.knex
+      .update({isactive: false})
+      .from('votes')
+      .where({ username })
   }
 
   /**

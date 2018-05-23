@@ -1,4 +1,8 @@
 const Vote = require('./vote');
-Vote.getChannelsListBySpecialGroup('gggg').then((result)=>{
-    console.log(result)
+// Vote.updateVIP('jjj','VIP').then((result)=>{
+//     console.log(result)
+// })
+
+Vote.deactivate('jjj').then((res)=>{
+    console.log(res)
 })
