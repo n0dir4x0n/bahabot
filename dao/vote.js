@@ -85,18 +85,18 @@ class VoteDao {
       .where({ username })
   }
 
-  static async activate(username) {
+  static async activateByChannel(channel) {
     return dao.knex
       .update({isactive: true})
       .from('votes')
-      .where({ username })
+      .where({ channel })
   }
 
-  static async deactivate(username) {
+  static async deactivateByChannel(channel) {
     return dao.knex
       .update({isactive: false})
       .from('votes')
-      .where({ username })
+      .where({ channel })
   }
 
   /**
