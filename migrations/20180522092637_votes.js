@@ -5,6 +5,7 @@ exports.up = function (knex, Promise) {
             table.string('username');
             table.string('specialgroup');
             table.text('channel');
+            table.text('channeluserscount');
             table.string('url');
             table.string('votetext');
             table.string('vip');
