@@ -100,6 +100,20 @@ class VoteDao {
     });
   }
 
+  static async getUserCountByChannel(channel){
+    return  dao.knex
+      .select('channeluserscount')
+      .from('votes')
+      .where({channel})
+  }
+
+  static async setUserCountByChannel(channel, channeluserscount){
+    return dao.knex
+      .update({ channeluserscount })
+      .from('votes')
+      .where({ channel })
+  }
+
   /**
    * Get person by id
    * @param id
