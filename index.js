@@ -58,6 +58,10 @@ bot.hears(/admin/i, ({reply, message}) =>{
    }
 })
 
+bot.hears(/^(.*)\n^(@[a-z]*)\n^(.*)/gim,({reply, message}) =>{
+
+})
+
 /**
  * Providing a telegram info
  */
@@ -68,7 +72,7 @@ bot.hears(/info/i, (ctx) =>{
 
 
    
-});
+});   
 
 
 
