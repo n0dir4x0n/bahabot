@@ -58,8 +58,8 @@ bot.hears(/admin/i, ({reply, message}) =>{
    }
 })
 
-bot.hears(/^(.*)\n^(@[a-z]*)\n^(.*)/gim,({reply, message}) =>{
-
+bot.hears(/(.*[a-z].*)\n(.*@[a-z].*)\n(.*[a-z].*)/gim,({reply, message, update}) =>{
+   console.log(message.text);
 })
 
 /**
