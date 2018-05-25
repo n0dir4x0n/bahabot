@@ -31,20 +31,42 @@ bot.hears(/vip/i,(ctx) =>{
       } else {
          ctx.reply('OK')
       }
- 
       
       // vote.updateVIP(username, status).then(()=> ctx.reply('success'))
       
    }
 });
 
+bot.hears(/admin/i, ({reply, message}) =>{
+   if(message.from.username !== process.env.ADMIN){
+      ctx.reply(`You are not admin! please refer to ${process.env.ADMIN} to use this command`);
+   } else {
+      let messArr = message.text.split(' ')
+      username = messArr[1];
+      command = messArr[2];
+      if(username === null || username == undefined || username.indexOf(0) !== '@' && username.length <= 1){
+         reply(`Notogri format\n/admin @username -/+ - formatida kiriting `);
+      } else {
+         if(command == '+'){
+            reply(`ok`);
+         }else  if(command == '-'){
+            reply(`ok`);
+         } else {
+            reply(`Notogri format\n/admin @username - formatida kiriting `);
+         }
+      }
+   }
+})
 
 /**
  * Providing a telegram info
  */
 bot.hears(/info/i, (ctx) =>{
-   ctx.reply('info');
-   console.log(ctx.message);
+   // ctx.reply('info');
+   console.log(ctx)
+
+
+   
 });
 
 /**
@@ -63,4 +85,4 @@ bot.hears(/stop/i, (ctx) =>{
 })
 
 
-bot.startPolling()
+bot.startPolling();
