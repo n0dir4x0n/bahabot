@@ -63,11 +63,14 @@ bot.hears(/admin/i, ({reply, message}) =>{
  */
 bot.hears(/info/i, (ctx) =>{
    // ctx.reply('info');
-   console.log(ctx)
+   console.log(ctx.update.message.from.id)
+   
 
 
    
 });
+
+
 
 /**
  * starts sending MEGA to bot participants
