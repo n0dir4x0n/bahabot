@@ -1,3 +1,30 @@
+
+==PRIORITY==
+------------ A
+------------ B
+------------ min number of subscribers
+------------ 
+------------  
+------------ max number of subscribers
+------------ C
+------------ D
+============
+
+Sample of MEGA
+Sample
+Ayollar kanalksdjfklsdjflsdjf
+@ayolllal
+link
+
+Schedule:
+status check 9.00
+manual start
+manual stop
+
+
+
+
+
 /set_start@ZiyoBot 
 🔴 <b>NAMUNA:</b> 🔴
 
@@ -85,4 +112,4 @@ har-xil</i>
 👭 QIZLAR_KANALI💄👠👗🎂🍕🍝
 #fotoretseptlar
 #videoretseptlar
-#fasonlar
+#fasonlarr

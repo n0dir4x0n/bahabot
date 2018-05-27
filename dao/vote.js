@@ -5,14 +5,14 @@ class Vote {
     username,
     specialgroup,
     channel,
-    url,
+    link,
     votetext
   }) {
     this.id = id;
     this.username = username;
     this.specialgroup = specialgroup;
     this.channel = channel;
-    this.url = url;
+    this.link = link;
     this.votetext = votetext;
   }
 }
@@ -28,20 +28,18 @@ class VoteDao {
    * @return {Promise<*>}
    */
   static async create({
-    id,
     username,
     specialgroup,
     channel,
-    url,
+    link,
     votetext
   }) {
     return await dao.knex
       .insert({
-        id,
         username,
         specialgroup,
         channel,
-        url,
+        link,
         votetext
       })
       .from('votes')
@@ -55,7 +53,7 @@ class VoteDao {
     const votes_arr = await dao.knex
       .select()
       .from('votes');
-    return votes_arr.map(vote => new Vote(vote));
+    return votes_arr;
   }
 
   /**
@@ -94,7 +92,7 @@ class VoteDao {
     return votes_arr.map((vote) => {
       return {
         chanel: vote.channel,
-        url: vote.url,
+        link: vote.link,
         text: vote.votetext
       }
     });

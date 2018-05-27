@@ -5,7 +5,7 @@ exports.up = function(knex, Promise) {
           table.increments();
           table.string('username');
           table.boolean('isactive');
-       }),
+       })])
 };
 
 exports.down = function(knex, Promise) {
