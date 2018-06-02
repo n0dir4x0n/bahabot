@@ -110,7 +110,7 @@ bot.command('/info', async (ctx) => {
 
     let t = await telegram.getMe();
     console.log(ctx.message.chat)
- 
+
 });
 
 bot.command('/yoqish', async (ctx) => {
@@ -130,87 +130,118 @@ bot.command('/yoqish', async (ctx) => {
 
 
 bot.command('/ketti', async (ctx) => {
-    if (ctx.message.from.username == process.env.ADMIN) {
-        let specialgroupid = await ctx.message.chat.id
-        let res = await Vote.getListBySpecialGroupID(specialgroupid);
-        res.map(async (el) => {
-            let { message_id } = await telegram.sendMessage(el.channelid, el.votetext, {
-            reply_markup: {
-                inline_keyboard: [[{
-                    "text": el.votetext,
-                    "url": el.link
-                }]]
-            } 
-        }) 
-            let channelid = el.channelid;
-            let messageid = message_id
-            await Vote.setMessageID(channelid, messageid);
-        })
-    }
-})
+            if (ctx.message.from.username == process.env.ADMIN) {
+                let specialgroupid = await ctx.message.chat.id
+                let SpecialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
 
-bot.command('/uchirish', async (ctx) => {
-    if (ctx.message.from.username == process.env.ADMIN) {
-        console.log(isactive)
-        if (!isactive) {
-            ctx.reply(`Megaga qabul uchirilgan`);
-        } else {
-            isactive = false;
-            ctx.reply(`Megaga qabul uchirildi`);
-            let specialgroupid = ctx.message.chat.id;
-            let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
-                specialGroupList.map(async (el) =>{
-                let channelid = el.channelid;
-                let chucbefore = await telegram.getChatMembersCount(channelid);
-                await Vote.setChucBefore(channelid, parseInt(chucbefore));
+                for (let i = 0; i < SpecialGroupList.length; i++) {
+                    let channelid = SpecialGroupList[i].channelid;
+                    for (let j = 0; j < SpecialGroupList.length; j++) {
+
+                        let votetext = SpecialGroupList[j].votetext;
+                        let link = SpecialGroupList[j].link;
+                        let {message_id} = await telegram.sendMessage(channelid, votetext, {
+                                reply_markup: {
+                                    inline_keyboard: [
+                                        [{
+                                            "text": votetext,
+                                            "url": link
+                                        }]
+                                    ]
+                                }
+                            })
+                        }
+                    }
+                        
+                        // SpecialGroupList.map(async (el) => {
+                        //     let channelid = el.channelid;
+                        //     let votetext = el.votetext;
+                        //     let link = el.link;
+                        //     let {
+                        //         message_id
+                        //     } = await telegram.sendMessage(channelid, votetext, {
+                        //         reply_markup: {
+                        //             inline_keyboard: [
+                        //                 [{
+                        //                     "text": votetext,
+                        //                     "url": link
+                        //                 }]
+                        //             ]
+                        //         }
+                        //     })
+                        //     console.log(message_id);
+
+                        //     let messageid = message_id
+                        //     await Vote.setMessageID(channelid, messageid);
+                        // })
+                    }
                 })
-             let countsList = await Vote.getChucListBefore();
-             countsList.map(async (el)=>{
-                 ctx.reply(`${el.channel} - ${el.chucbefore} ta`);
-             })
-        }
-    }
-})
 
-bot.command('/sanash', async (ctx) =>{
-    if (ctx.message.from.username == process.env.ADMIN) {
-        let specialgroupid = await ctx.message.chat.id
-        let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
-        
-        specialGroupList.map(async (el) =>{
-            let channelid = el.channelid;
-            let chucafter = await telegram.getChatMembersCount(channelid);
-            await Vote.setChucAfter(channelid, parseInt(chucafter));
-            let [{messageid}] = await Vote.getMessageID(channelid);
-            await telegram.deleteMessage(channelid, messageid)
+            bot.command('/uchirish', async (ctx) => {
+                if (ctx.message.from.username == process.env.ADMIN) {
+                    console.log(isactive)
+                    if (!isactive) {
+                        ctx.reply(`Megaga qabul uchirilgan`);
+                    } else {
+                        isactive = false;
+                        ctx.reply(`Megaga qabul uchirildi`);
+                        let specialgroupid = ctx.message.chat.id;
+                        let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
+                        specialGroupList.map(async (el) => {
+                            let channelid = el.channelid;
+                            let chucbefore = await telegram.getChatMembersCount(channelid);
+                            await Vote.setChucBefore(channelid, parseInt(chucbefore));
+                        })
+                        let countsList = await Vote.getChucListBefore();
+                        countsList.map(async (el) => {
+                            ctx.reply(`${el.channel} - ${el.chucbefore} ta`);
+                        })
+                    }
+                }
             })
-            
-            let countsList = await Vote.getChucListAfter();
-             countsList.map(async (el)=>{
-                 ctx.reply(`Megadan keyin ${el.channel} - ${el.chucafter} ta`);
-             })
-        }
-})
 
-bot.command('/test', async(ctx)=>{
-    await telegram.sendMessage('-1001172311320', 'Share:', {
-        reply_markup: {
-            inline_keyboard: [[{
-                "text": 'Begoyimuz',
-                // switch_inline_query: 'share',
-                "url": "https://t.me/Begoyimuz"
-            }]]
-        }
-    })
-})
+            bot.command('/sanash', async (ctx) => {
+                if (ctx.message.from.username == process.env.ADMIN) {
+                    let specialgroupid = await ctx.message.chat.id
+                    let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
 
-bot.use(async (ctx, bot) => {
-    if (ctx.channelPost != null) {
-        let channelid = await ctx.channelPost.chat.id
-        let channel = await ctx.channelPost.chat.title
-        let up = await Vote.setChannelID(channel, channelid)
-        console.log(ctx.channelPost, bot)
-    }
-})
+                    specialGroupList.map(async (el) => {
+                        let channelid = el.channelid;
+                        let chucafter = await telegram.getChatMembersCount(channelid);
+                        await Vote.setChucAfter(channelid, parseInt(chucafter));
+                        let [{
+                            messageid
+                        }] = await Vote.getMessageID(channelid);
+                        await telegram.deleteMessage(channelid, messageid)
+                    })
 
-bot.startPolling();
+                    let countsList = await Vote.getChucListAfter();
+                    countsList.map(async (el) => {
+                        ctx.reply(`Megadan keyin ${el.channel} - ${el.chucafter} ta`);
+                    })
+                }
+            })
+
+            bot.command('/test', async (ctx) => {
+                await telegram.sendMessage('-1001172311320', 'Share:', {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{
+                                "text": 'Begoyimuz',
+                                "url": "https://t.me/Begoyimuz"
+                            }]
+                        ]
+                    }
+                })
+            })
+
+            bot.use(async (ctx, bot) => {
+                if (ctx.channelPost != null) {
+                    let channelid = await ctx.channelPost.chat.id
+                    let channel = await ctx.channelPost.chat.title
+                    let up = await Vote.setChannelID(channel, channelid)
+                    console.log(ctx.channelPost, bot)
+                }
+            })
+
+            bot.startPolling();

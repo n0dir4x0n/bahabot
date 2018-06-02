@@ -55,7 +55,8 @@ class VoteDao {
       .from('votes')
       .where({
         specialgroupid
-      });
+      })
+      .orderByRaw('vip ASC');
     return votes_arr;
   }
 
