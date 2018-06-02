@@ -1,6 +1,7 @@
 require('dotenv').load();
-const Telegraf = require('telegraf')
-const Telegram = require('telegraf/telegram')
+const Telegraf = require('telegraf');
+const Telegram = require('telegraf/telegram');
+const telegram = new Telegram(process.env.BOT_TOKEN);
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const Vote = require('./dao/vote');
 const vote = new Vote();
@@ -94,7 +95,7 @@ bot.hears(/list/i, async (ctx) =>{
         for(item of list){
             ctx.reply(item)
         }    
-    }
+    } 
 })
 
 
@@ -114,6 +115,7 @@ bot.hears(/info/i, async (ctx) => {
     // getChatMember
 
     // console.log(ctx)
+    telegram.getChatMembersCount('-1001172311320').then(r=> console.log(r));
     let ch = await ctx.channelPost
     console.log(ch)
 
@@ -127,7 +129,8 @@ bot.use(async (ctx, bot) => {
     if(ctx.channelPost!= null){
         let ch = await ctx.channelPost.chat.id
         let cc = await ctx.getChatMembersCount(ch)
-        console.log(cc)
+        console.log(cc);
+        console.log(ctx.channelPost.chat);
         // ctx.reply('heyeheyeh');
     }
 
