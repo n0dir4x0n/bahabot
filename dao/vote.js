@@ -129,18 +129,23 @@ class VoteDao {
       .where({ channelid })
   }
 
-  static async setMessageID(channelid, messageid){
+  static async setMessageID({specialgroupid, channelid, messageid}){
     return  dao.knex
-      .update({ messageid })
-      .from('votes')
-      .where({channelid})
+      .insert({specialgroupid, channelid, messageid})
+      .from('messages')
+   }
+
+  static async getMessageID(specialgroupid){
+    return  dao.knex
+      .select()
+      .from('messages')
+      .where({specialgroupid})
   }
 
-  static async getMessageID(channelid){
-    return  dao.knex
-      .select('messageid')
-      .from('votes')
-      .where({channelid})
+  static async deleteMessages(){
+    return dao.knex
+      .del()
+      .from('messages')
   }
 
 

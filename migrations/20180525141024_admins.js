@@ -5,6 +5,7 @@ exports.up = function(knex, Promise) {
           table.increments();
           table.string('username');
           table.boolean('isactive');
+          table.timestamps();
        })])
 };
 

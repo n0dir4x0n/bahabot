@@ -150,6 +150,8 @@ bot.command('/ketti', async (ctx) => {
                                     ]
                                 }
                             })
+                            let messageid = message_id;
+                            await Vote.setMessageID({specialgroupid, channelid, messageid});
                         }
                     }
                         
@@ -203,7 +205,24 @@ bot.command('/ketti', async (ctx) => {
             bot.command('/sanash', async (ctx) => {
                 if (ctx.message.from.username == process.env.ADMIN) {
                     let specialgroupid = await ctx.message.chat.id
-                    let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
+                    let messageList = await Vote.getMessageID(specialgroupid);
+                    let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);    
+                    messageList.map(async (el)=>{
+                        console.log(el)
+                        let channelid = el.channelid;
+                        let messageid = el.messageid;
+                        await telegram.deleteMessage(channelid, messageid)
+                    })
+
+
+
+                    // for (let i = 0; i < SpecialGroupList.length; i++) {
+                    //     let channelid = SpecialGroupList[i].channelid;
+                    //     for (let j = 0; j < SpecialGroupList.length; j++) {
+                            
+                    //         await telegram.deleteMessage(channelid, messageid)
+                    //         }
+                    //     }
 
                     specialGroupList.map(async (el) => {
                         let channelid = el.channelid;
@@ -212,7 +231,7 @@ bot.command('/ketti', async (ctx) => {
                         let [{
                             messageid
                         }] = await Vote.getMessageID(channelid);
-                        await telegram.deleteMessage(channelid, messageid)
+                    
                     })
 
                     let countsList = await Vote.getChucListAfter();
@@ -220,6 +239,7 @@ bot.command('/ketti', async (ctx) => {
                         ctx.reply(`Megadan keyin ${el.channel} - ${el.chucafter} ta`);
                     })
                 }
+                await Vote.deleteMessages();
             })
 
             bot.command('/test', async (ctx) => {
