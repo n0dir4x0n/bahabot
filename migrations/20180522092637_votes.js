@@ -4,6 +4,7 @@ exports.up = function (knex, Promise) {
             table.increments();
             table.string('username');
             table.string('userid');
+            table.string('messageid');
             table.string('specialgroup');
             table.string('specialgroupid');
             table.text('channel');

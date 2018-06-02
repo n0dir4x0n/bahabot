@@ -94,12 +94,18 @@ class VoteDao {
   }
 
   static async getChucListBefore(){
-    return  dao.knex
-      .select()
+    const votes_arr = await dao.knex
+      .select('channel', 'chucbefore')
       .from('votes')
-      .where('channel', 'chucbefore')
-      
-  }
+      return votes_arr;
+    }
+
+    static async getChucListAfter(){
+      const votes_arr = await dao.knex
+        .select('channel', 'chucafter')
+        .from('votes')
+        return votes_arr;
+      }
 
   static async setChucBefore(channelid, chucbefore){
     return dao.knex
@@ -108,19 +114,32 @@ class VoteDao {
       .where({ channelid })
   }
 
-
   static async getChucAfter(channelid){
     return  dao.knex
-      .select('chucbefore')
+      .select('chucafter')
       .from('votes')
       .where({channelid})
   }
 
-  static async setChucAfter(channelid, chuc){
+  static async setChucAfter(channelid, chucafter){
     return dao.knex
       .update({ chucafter })
       .from('votes')
       .where({ channelid })
+  }
+
+  static async setMessageID(channelid, messageid){
+    return  dao.knex
+      .update({ messageid })
+      .from('votes')
+      .where({channelid})
+  }
+
+  static async getMessageID(channelid){
+    return  dao.knex
+      .select('messageid')
+      .from('votes')
+      .where({channelid})
   }
 
 
