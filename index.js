@@ -6,21 +6,15 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 const Vote = require('./dao/vote');
 const vote = new Vote();
 const admin = require('./dao/admin');
+let isactive = false;
 
 bot.start((ctx) => {
     ctx.reply('OK');
 })
 
 bot.help((ctx) => ctx.reply('Send me a sticker'))
-// bot.on('sticker', (ctx) => ctx.reply('👍'))
-bot.hears('hi', (ctx) => ctx.reply('Hey there'))
-bot.hears(/buy/i, (ctx) => ctx.reply('Buy-buy'))
 
-
-/**
- * setting vip status to a participant
- */
-bot.hears(/vip/i, (ctx) => {
+bot.command('/vip', (ctx) => {
     if (ctx.message.from.username !== process.env.ADMIN) {
         ctx.reply(`You are not admin! please refer to ${process.env.ADMIN} to use this command`);
     } else {
@@ -32,14 +26,14 @@ bot.hears(/vip/i, (ctx) => {
         if (username === null || status === null || status === undefined || username === undefined || username.indexOf(0) != '@' && username.length <= 1 || status.length > 1) {
             ctx.reply(`Noto'g'ri format\n/vip @username A - formatida kiriting`)
         } else {
-            Vote.updateVIP(username, status).then(()=>{
+            Vote.updateVIP(username, status).then(() => {
                 ctx.reply('OK')
             })
-       }
+        }
     }
 });
 
-bot.hears(/admin/i, ({
+bot.command('/admin', ({
     reply,
     message
 }) => {
@@ -68,89 +62,134 @@ bot.hears(/mega/i, ({
     message,
     update
 }) => {
-    if (message.text.match(/^(@.*)/gim) != null) {
-        let channel = message.text.match(/^(@.*)/gim)[0]
-        let username = message.from.username;
-        let userId = message.from.id;
-        let specialgroup = message.chat.title;
-        let specialgoupId = message.chat.id;
-        let arr = message.text.split('\n')
-        let link = arr[3];
-        let votetext = arr[1];
-            Vote.create({username, specialgroup, channel, link, votetext})
-            .then(()=>{
-                reply(`${channel} kanali qo'shildi`)
-            })
+    if (isactive) {
+        if (message.text.match(/^(@.*)/gim) != null) {
+            let channel = message.text.match(/^(@.*)/gim)[0]
+            let username = message.from.username;
+            let userid = message.from.id;
+            let specialgroup = message.chat.title;
+            let specialgroupid = message.chat.id;
+            let arr = message.text.split('\n');
+            let link = arr[3];
+            let votetext = arr[1];
+            telegram.getChatMember(specialgroupid, userid).then(r => console.log(r));
+            console.log(userid, specialgroupid);
+            Vote.create({
+                    username,
+                    userid,
+                    specialgroup,
+                    specialgroupid,
+                    channel,
+                    link,
+                    votetext
+                })
+                .then(() => {
+                    reply(`${channel} kanali qo'shildi`)
+                })
+        } else {
+            reply(`Noto\'gri format: @${message.from.username}!`)
+        }
     } else {
-        reply(`Noto\'gri format: @${message.from.username}!`)
+        reply(`Megaga qabulni ochilishini kuting`)
     }
 })
 
-bot.hears(/list/i, async (ctx) =>{
+bot.command('/list', async (ctx) => {
     if (ctx.message.from.username !== process.env.ADMIN) {
         ctx.reply(`You are not admin! please refer to @${process.env.ADMIN} to use this command`);
     } else {
         let list = await Vote.getList();
-        // let JsonList = JSON.stringify(list);
-        for(item of list){
+        for (item of list) {
             ctx.reply(item)
-        }    
-    } 
+        }
+    }
 })
 
-
-/**
- * Providing a telegram info
- */
-bot.hears(/info/i, async (ctx) => {
+bot.command('/info', async (ctx) => {
     ctx.reply('info');
-    //    console.log(ctx.update.message.from.id)
-    // let a = ctx.getChatMember(ctx.update.message.chat.id, ctx.update.message.from.id)
-    // a.then((res)=>{
-    //     console.log(res)
-    // })
 
-    // console.log(ctx.telegram.options.agent._events)// console.log(ctx.message.chat, )
-
-    // getChatMember
-
-    // console.log(ctx)
-    telegram.getChatMembersCount('-1001172311320').then(r=> console.log(r));
-    let ch = await ctx.channelPost
-    console.log(ch)
-
+    let t = await telegram.getMe();
+    console.log(ctx.message.chat)
+ 
 });
 
-bot.use(async (ctx, bot) => {
-    // const start = new Date()
-    // await next()
-    // const ms = new Date() - start
-    // console.log('Response time %sms', ms)
-    if(ctx.channelPost!= null){
-        let ch = await ctx.channelPost.chat.id
-        let cc = await ctx.getChatMembersCount(ch)
-        console.log(cc);
-        console.log(ctx.channelPost.chat);
-        // ctx.reply('heyeheyeh');
+bot.command('/yoqish', async (ctx) => {
+    if (!isactive) {
+        if (ctx.message.from.username == process.env.ADMIN) {
+            // let res = await Vote.getList();
+            // res.map(async (el) => {
+            //     await telegram.sendMessage(el.specialgroupid, `Megaga qabul  boshlandi`);
+            // })
+            ctx.reply(`Megaga qabul yoqildi`)
+            isactive = true;
+        }
+    } else {
+        ctx.reply(`Megaga qabul yoqilgan`);
     }
-
-
-
 })
 
-/**
- * starts sending MEGA to bot participants
- */
-bot.hears(/start/i, (ctx) => {
 
+bot.command('/ketti', async (ctx) => {
+    if (ctx.message.from.username == process.env.ADMIN) {
+        let specialgroupid = await ctx.message.chat.id
+        let res = await Vote.getListBySpecialGroupID(specialgroupid);
+        res.map(async (el) => {
+            await telegram.sendMessage(el.channelid, el.votetext, {
+            reply_markup: {
+                inline_keyboard: [[{
+                    "text": el.votetext,
+                    "url": el.link
+                }]]
+            } 
+        }) 
+        console.log(el)
+        })
+    }
 })
 
-/**
- * delete all MEGA from participant channels
- */
+bot.command('/uchirish', async (ctx) => {
+    if (ctx.message.from.username == process.env.ADMIN) {
+        console.log(isactive)
+        if (!isactive) {
+           
+            let specialgroupid = ctx.message.chat.id;
+            let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid)
+            console.log(specialGroupList)
+            specialGroupList.map(async (el) =>{
+                let channelid = el.channelid;
+                let chucbefore = await telegram.getChatMembersCount(channelid);
+                console.log(chucbefore)
+                // let writeToDB = await Vote.setChucBefore(channelid, parseInt(chucbefore));
+             },)
+            // let res = await Vote.getChucListBefore();
+            // ctx.reply(res);
+            ctx.reply(`Megaga qabul uchirilgan`);
+            
+        } else {
+            isactive = false;
+            ctx.reply(`Megaga qabul uchirildi`);
+        }
+    }
+})
 
-bot.hears(/stop/i, (ctx) => {
+bot.command('/test', async(ctx)=>{
+    await telegram.sendMessage('-1001172311320', 'Share:', {
+        reply_markup: {
+            inline_keyboard: [[{
+                "text": 'Begoyimuz',
+                // switch_inline_query: 'share',
+                "url": "https://t.me/Begoyimuz"
+            }]]
+        }
+    })
+})
 
+bot.use(async (ctx, bot) => {
+    if (ctx.channelPost != null) {
+        let channelid = await ctx.channelPost.chat.id
+        let channel = await ctx.channelPost.chat.title
+        let up = await Vote.setChannelID(channel, channelid)
+    }
 })
 
 bot.startPolling();

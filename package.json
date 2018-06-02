@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node ./dao/test.js"
+    "test": "node ./dao/test.js",
+    "migrate": "knex migrate:latest",
+    "rollback": "knex migrate:rollback",
+    "nodemon": "npx nodemon index.js"
   },
   "keywords": [],
   "author": "",

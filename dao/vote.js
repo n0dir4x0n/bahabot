@@ -27,21 +27,9 @@ class VoteDao {
    * @param email
    * @return {Promise<*>}
    */
-  static async create({
-    username,
-    specialgroup,
-    channel,
-    link,
-    votetext
-  }) {
+  static async create({username, userid, specialgroup, specialgroupid, channel, link, votetext}) {
     return await dao.knex
-      .insert({
-        username,
-        specialgroup,
-        channel,
-        link,
-        votetext
-      })
+      .insert({username, userid, specialgroup, specialgroupid, channel, link, votetext})
       .from('votes')
   }
 
@@ -61,14 +49,14 @@ class VoteDao {
    * @param specialgroup
    * @return {Promise<*>}
    */
-  static async getListBySpecialGroup(specialgroup) {
+  static async getListBySpecialGroupID(specialgroupid) {
     const votes_arr = await dao.knex
       .select()
       .from('votes')
       .where({
-        specialgroup
+        specialgroupid
       });
-    return votes_arr.map(vote => new Vote(vote));
+    return votes_arr;
   }
 
   /**
@@ -81,7 +69,7 @@ class VoteDao {
       .select('channel')
       .from('votes')
       .where({ specialgroup });
-    return votes_arr.map(vote => vote.channel);
+    return votes_arr;
   }
 
   static async getVoteList() {
@@ -98,16 +86,47 @@ class VoteDao {
     });
   }
 
-  static async getUserCountByChannel(channel){
+  static async getChucBefore(channelid){
     return  dao.knex
-      .select('channeluserscount')
+      .select('chucbefore')
       .from('votes')
-      .where({channel})
+      .where({channelid})
   }
 
-  static async setUserCountByChannel(channel, channeluserscount){
+  static async getChucListBefore(){
+    return  dao.knex
+      .select()
+      .from('votes')
+      .where('channel', 'chucbefore')
+      
+  }
+
+  static async setChucBefore(channelid, chucbefore){
     return dao.knex
-      .update({ channeluserscount })
+      .update({ chucbefore })
+      .from('votes')
+      .where({ channelid })
+  }
+
+
+  static async getChucAfter(channelid){
+    return  dao.knex
+      .select('chucbefore')
+      .from('votes')
+      .where({channelid})
+  }
+
+  static async setChucAfter(channelid, chuc){
+    return dao.knex
+      .update({ chucafter })
+      .from('votes')
+      .where({ channelid })
+  }
+
+
+  static async setChannelID(channel, channelid){
+    return dao.knex
+      .update({ channelid })
       .from('votes')
       .where({ channel })
   }
