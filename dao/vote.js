@@ -1,19 +1,19 @@
 const dao = require('./base');
 class Vote {
   constructor({
-    id,
     username,
     specialgroup,
     channel,
     link,
-    votetext
+    votetext,
+    vip
   }) {
-    this.id = id;
     this.username = username;
     this.specialgroup = specialgroup;
     this.channel = channel;
     this.link = link;
     this.votetext = votetext;
+    this.vip = vip;
   }
 }
 
@@ -39,7 +39,7 @@ class VoteDao {
    */
   static async getList() {
     const votes_arr = await dao.knex
-      .select()
+      .select('username', 'specialgroup', 'channel', 'vip')
       .from('votes');
     return votes_arr;
   }

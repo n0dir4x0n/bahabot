@@ -22,12 +22,10 @@ class AdminDao {
    * @return {Promise<*>}
    */
   static async create({
-    id,
-    username,
+    username
   }) {
     return await dao.knex
       .insert({
-        id,
         username,
         isactive: true
       })
