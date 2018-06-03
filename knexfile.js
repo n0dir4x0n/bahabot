@@ -2,14 +2,20 @@
 
 module.exports = {
 
+
+    //  client: 'sqlite3',
+    // connection: {
+    //   filename: './bot.sqlite3'
+    // }
+
   // development: {
   //   client: 'sqlite3',
   //   connection: {
   //     filename: './dev.sqlite3'
   //   }
   // },
-
   // staging: {
+
     client: 'postgresql',
     connection: {
       database: 'some',
@@ -23,6 +29,8 @@ module.exports = {
     migrations: {
       tableName: 'knex_migrations'
     }
+
+
   // },
 
   // production: {
