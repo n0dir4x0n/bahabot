@@ -7,6 +7,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 const Vote = require('./dao/vote');
 const vote = new Vote();
 const admin = require('./dao/admin');
+let admins = require('./admins');
 // const winston = require('winston');
 
 let isactive = false;
@@ -110,18 +111,23 @@ bot.command('/list', async (ctx) => {
     }
 })
 
-bot.command('/info', async (ctx) => {
-    ctx.reply('info');
+bot.command('/ping', async (ctx) => {
+        let username = await ctx.message.from.username
+        if ( username == process.env.ADMIN) {
+            await ctx.reply('PONG');
+        }
+    
 });
+
 
 bot.command('/qabulon', async (ctx) => {
     if (!isactive) {
         if (ctx.message.from.username == process.env.ADMIN) {
-            ctx.reply(`Megaga qabul yoqildi`)
+           await ctx.reply(`Megaga qabul yoqildi`)
             isactive = true;
         }
     } else {
-        ctx.reply(`Megaga qabul yoqilgan`);
+        await ctx.reply(`Megaga qabul yoqilgan`);
     }
 })
 
@@ -179,7 +185,8 @@ bot.command('/shareon', async (ctx) => {
                 })
 
             bot.command('/qabuloff', async (ctx) => {
-                if (ctx.message.from.username == process.env.ADMIN) {
+                let username = ctx.message.from.username;
+                if (username == process.env.ADMIN | username == process.env.ADMIN2) {
                     console.log(isactive)
                     if (!isactive) {
                         ctx.reply(`Megaga qabul uchirilgan`);
@@ -283,3 +290,7 @@ bot.command('/shareon', async (ctx) => {
             // })
 
             bot.startPolling();
+
+            async function isAdmin (username, admins){
+                return await admins.includes(username)? true: false 
+            }
