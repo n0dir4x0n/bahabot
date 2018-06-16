@@ -67,38 +67,34 @@ const Vote = require('./dao/vote');
 //     }
 // })
 
-// bot.hears(/mega/i, ({reply,message,update}) => {
-//     if (isactive) {
-//         if (message.text.match(/^(@.*)/gim) != null) {
-//             let channel = message.text.match(/^(@.*)/gim)[0]
-//             let username = message.from.username;
-//             let userid = message.from.id;
-//             let specialgroup = message.chat.title;
-//             let specialgroupid = message.chat.id;
-//             let arr = message.text.split('\n');
-//             let link = arr[3];
-//             let votetext = arr[1];
-//             telegram.getChatMember(specialgroupid, userid).then(r => console.log(r));
-//             console.log(userid, specialgroupid);
-//             Vote.create({
-//                     username
-//                     // userid,
-//                     specialgroup,
-//                     specialgroupid,
-//                     channel,
-//                     link,
-//                     votetext
-//                 })
-//                 .then(() => {
-//                     reply(`${channel} kanali qo'shildi`)
-//                 })
-//         } else {
-//             reply(`Noto\'gri format: @${message.from.username}!`)
-//         }
-//     } else {
-//         reply(`Megaga qabulni ochilishini kuting`)
-//     }
-// })
+bot.hears(/mega/i, ({reply,message,update}) => {
+    let isActive = await Vote.getStatus(specialgroupid);
+    let username = await message.from.username;
+    let userid = await message.from.id;
+    let specialgroup = await message.chat.title;
+    let specialgroupid = await message.chat.id;
+    let arr = await message.text.split('\n');
+
+    if (await isActive) {
+        if (message.text.match(/^(@.*)/gim) != null) {
+            let channel = message.text.match(/^(@.*)/gim)[0];                   
+            let link = arr[3];
+            let votetext = arr[1];
+
+            await telegram.getChatMember(specialgroupid, userid).then(r => console.log(r));
+            console.log(userid, specialgroupid);
+
+            Vote.create({username,userid,specialgroup,specialgroupid,channel,link,votetext})
+                .then(() => {
+                    reply(`${channel} kanali qo'shildi`)
+                })
+        } else {
+            reply(`Noto\'gri format: @${message.from.username}!`)
+        }
+    } else {
+        reply(`Megaga qabulni ochilishini kuting`)
+    }
+})
 
 // Method is done
 bot.command('/start', async (ctx) => {
@@ -248,7 +244,7 @@ bot.command('/Send_mega', async (ctx) => {
 
 
 
-            bot.command('/shareoff', async (ctx) => {
+bot.command('/shareoff', async (ctx) => {
                 if(!isdeleted){
                     if (ctx.message.from.username == process.env.ADMIN) {
                     let specialgroupid = await ctx.message.chat.id
@@ -271,7 +267,7 @@ bot.command('/Send_mega', async (ctx) => {
                 } 
               })
 
-            bot.command('/deleteall', async (ctx) =>{
+bot.command('/deleteall', async (ctx) =>{
                 if(parseInt(ctx.message.chat.id) > 0){
                 if (ctx.message.from.username == process.env.ADMIN) {
                 let res =  await Vote.deleteVotes();
@@ -284,7 +280,7 @@ bot.command('/Send_mega', async (ctx) => {
                 }
             })
 
-            bot.use(async (ctx, bot) => {
+bot.use(async (ctx, bot) => {
                 if (ctx.channelPost != null) {
                     let channelid = await ctx.channelPost.chat.id
                     let channel = await ctx.channelPost.chat.title
@@ -341,4 +337,4 @@ bot.command('/Send_mega', async (ctx) => {
 //     }
 // })
 
-            bot.startPolling();
+bot.startPolling();
