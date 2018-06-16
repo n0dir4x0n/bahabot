@@ -44,6 +44,37 @@ class VoteDao {
     return votes_arr;
   }
 
+  static async getStatus(specialgroupid){
+    const arr =  await dao.knex
+      .select('isactive')
+      .from('activities')
+      .where({specialgroupid})
+      .limit(1);
+      return arr[0].isactive;
+  }
+
+  
+
+  static async startActive(specialgroupid, isactive = false, isdeleted = false){
+    return await dao.knex
+    .insert({specialgroupid, isactive, isdeleted})
+    .from('activities'); 
+  }
+
+  static async activate(specialgroupid, isactive = true){
+    return await dao.knex
+    .update({isactive})
+    .from('activities')
+    .where({specialgroupid});
+  }
+
+  static async deactivate(specialgroupid, isactive = false){
+    return await dao.knex
+    .update({isactive})
+    .from('activities')
+    .where({specialgroupid});
+  }
+
   /**
    * Get list by specialgroup
    * @param specialgroup

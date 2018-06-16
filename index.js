@@ -2,115 +2,115 @@ require('dotenv').load();
 
 const Telegraf = require('telegraf');
 const Telegram = require('telegraf/telegram');
+// const redis = require('redis');
 const telegram = new Telegram(process.env.BOT_TOKEN);
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const Vote = require('./dao/vote');
-const vote = new Vote();
-const admin = require('./dao/admin');
-let admins = require('./admins');
+// const vote = new Vote();
+// const admin = require('./dao/admin');
+// let admins = require('./admins');
+
 // const winston = require('winston');
 
-let isactive = false;
-let isdeleted = false;
+// client = redis.createClient();
+// client.on('error', (err) =>{
+//     console.log('Error ' + err );
+// });
 
-bot.start((ctx) => {
-    ctx.reply('OK');
-})
+// bot.start((ctx) => {
+//     ctx.reply('OK');
+// })
 
 // bot.help((ctx) => ctx.reply('Send me a sticker'))
 
-bot.command('/vip', (ctx) => {
-    if (ctx.message.from.username !== process.env.ADMIN) {
-        ctx.reply(`You are not admin! please refer to ${process.env.ADMIN} to use this command`);
-    } else {
+// bot.command('/vip', (ctx) => {
+//     if (ctx.message.from.username !== process.env.ADMIN) {
+//         ctx.reply(`You are not admin! please refer to ${process.env.ADMIN} to use this command`);
+//     } else {
 
-        let messArr = ctx.message.text.split(' ')
-        username = messArr[1]
-        status = messArr[2];
+//         let messArr = ctx.message.text.split(' ')
+//         username = messArr[1]
+//         status = messArr[2];
 
-        if (username === null || status === null || status === undefined || username === undefined || username.indexOf(0) != '@' && username.length <= 1 || status.length > 1) {
-            ctx.reply(`Noto'g'ri format\n/vip @username A - formatida kiriting`)
-        } else {
-            Vote.updateVIP(username, status).then(() => {
-                ctx.reply('OK')
-            })
-        }
+//         if (username === null || status === null || status === undefined || username === undefined || username.indexOf(0) != '@' && username.length <= 1 || status.length > 1) {
+//             ctx.reply(`Noto'g'ri format\n/vip @username A - formatida kiriting`)
+//         } else {
+//             Vote.updateVIP(username, status).then(() => {
+//                 ctx.reply('OK')
+//             })
+//         }
+//     }
+// });
+
+// bot.command('/admin', ({
+//     reply,
+//     message
+// }) => {
+//     if (message.from.username !== process.env.ADMIN) {
+//         ctx.reply(`You are not admin! please refer to ${process.env.ADMIN} to use this command`);
+//     } else {
+//         let messArr = message.text.split(' ')
+//         username = messArr[1];
+//         command = messArr[2];
+//         if (username === null || username == undefined || username.indexOf(0) !== '@' && username.length <= 1) {
+//             reply(`Notogri format\n/admin @username -/+ - formatida kiriting `);
+//         } else {
+//             if (command == '+') {
+//                 admin.create({username})
+//                 reply(`ok`);
+//             } else if (command == '-') {
+//                 reply(`ok`);
+//             } else {
+//                 reply(`Notogri format\n/admin @username - formatida kiriting `);
+//             }
+//         }
+//     }
+// })
+
+// bot.hears(/mega/i, ({reply,message,update}) => {
+//     if (isactive) {
+//         if (message.text.match(/^(@.*)/gim) != null) {
+//             let channel = message.text.match(/^(@.*)/gim)[0]
+//             let username = message.from.username;
+//             let userid = message.from.id;
+//             let specialgroup = message.chat.title;
+//             let specialgroupid = message.chat.id;
+//             let arr = message.text.split('\n');
+//             let link = arr[3];
+//             let votetext = arr[1];
+//             telegram.getChatMember(specialgroupid, userid).then(r => console.log(r));
+//             console.log(userid, specialgroupid);
+//             Vote.create({
+//                     username
+//                     // userid,
+//                     specialgroup,
+//                     specialgroupid,
+//                     channel,
+//                     link,
+//                     votetext
+//                 })
+//                 .then(() => {
+//                     reply(`${channel} kanali qo'shildi`)
+//                 })
+//         } else {
+//             reply(`Noto\'gri format: @${message.from.username}!`)
+//         }
+//     } else {
+//         reply(`Megaga qabulni ochilishini kuting`)
+//     }
+// })
+
+// Method is done
+bot.command('/start', async (ctx) => {
+    try {
+        let specialgroupid = await ctx.message.chat.id;
+        await Vote.startActive(specialgroupid);
+    } catch (error) { 
+
     }
 });
 
-bot.command('/admin', ({
-    reply,
-    message
-}) => {
-    if (message.from.username !== process.env.ADMIN) {
-        ctx.reply(`You are not admin! please refer to ${process.env.ADMIN} to use this command`);
-    } else {
-        let messArr = message.text.split(' ')
-        username = messArr[1];
-        command = messArr[2];
-        if (username === null || username == undefined || username.indexOf(0) !== '@' && username.length <= 1) {
-            reply(`Notogri format\n/admin @username -/+ - formatida kiriting `);
-        } else {
-            if (command == '+') {
-                admin.create({username})
-                reply(`ok`);
-            } else if (command == '-') {
-                reply(`ok`);
-            } else {
-                reply(`Notogri format\n/admin @username - formatida kiriting `);
-            }
-        }
-    }
-})
-
-bot.hears(/mega/i, ({
-    reply,
-    message,
-    update
-}) => {
-    if (isactive) {
-        if (message.text.match(/^(@.*)/gim) != null) {
-            let channel = message.text.match(/^(@.*)/gim)[0]
-            let username = message.from.username;
-            let userid = message.from.id;
-            let specialgroup = message.chat.title;
-            let specialgroupid = message.chat.id;
-            let arr = message.text.split('\n');
-            let link = arr[3];
-            let votetext = arr[1];
-            telegram.getChatMember(specialgroupid, userid).then(r => console.log(r));
-            console.log(userid, specialgroupid);
-            Vote.create({
-                    username,
-                    userid,
-                    specialgroup,
-                    specialgroupid,
-                    channel,
-                    link,
-                    votetext
-                })
-                .then(() => {
-                    reply(`${channel} kanali qo'shildi`)
-                })
-        } else {
-            reply(`Noto\'gri format: @${message.from.username}!`)
-        }
-    } else {
-        reply(`Megaga qabulni ochilishini kuting`)
-    }
-})
-
-bot.command('/list', async (ctx) => {
-    if(parseInt(ctx.message.chat.id) > 0){
-        if (ctx.message.from.username == process.env.ADMIN) {
-            let list = await Vote.getList();
-        list.map(async (el)=>{
-            ctx.reply(`username - @${el.username}\nguruh - ${el.specialgroup}\nkanal - ${el.channel}\nvip - ${el.channel}`)
-        })
-        }
-    }
-})
-
+// Method is done
 bot.command('/ping', async (ctx) => {
         let username = await ctx.message.from.username
         if ( username == process.env.ADMIN) {
@@ -119,20 +119,104 @@ bot.command('/ping', async (ctx) => {
     
 });
 
+// Method is done
+bot.command('/Start_mega', async (ctx) => {
+    let isAdmin = await ctx.message.from.username == process.env.ADMIN;
+    let specialgroupid = await ctx.message.chat.id;
+    let isActive = await Vote.getStatus(specialgroupid);
+    let notActiveIsAdmin = isAdmin && !isActive
+    
+    if(await notActiveIsAdmin){
+        await ctx.reply(`Megaga arizalar qabul qilish boshlandi`);
+        await Vote.activate(specialgroupid);
+    } else if(isAdmin) {
+        await ctx.reply(`yoqilgan`);
+    }
+})
 
-bot.command('/qabulon', async (ctx) => {
-    if (!isactive) {
-        if (ctx.message.from.username == process.env.ADMIN) {
-           await ctx.reply(`Megaga qabul yoqildi`)
-            isactive = true;
-        }
-    } else {
-        await ctx.reply(`Megaga qabul yoqilgan`);
+// Method is done
+bot.command('/Stop_mega', async (ctx) => {
+    let isAdmin = ctx.message.from.username == process.env.ADMIN;
+    let specialgroupid = await ctx.message.chat.id;
+    let isActive = await Vote.getStatus(specialgroupid);
+    let isActiveIsAdmin = isAdmin && isActive
+    let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
+
+    if(await isActiveIsAdmin){
+        Vote.deactivate(specialgroupid).then(()=>{    
+            ctx.reply(`Мегага қабул тугади бирозданг сўнг мега таййор бўлади
+            Илтимос сабир билан кутинг`);   
+
+            specialGroupList.map(async (el) => {
+                let channelid = el.channelid;
+                let chucbefore = await telegram.getChatMembersCount(channelid);
+                await ctx.reply(`Megadan oldin @${el.channel} [${chucbefore}] `);
+                await Vote.setChucBefore(channelid, parseInt(chucbefore));
+            })
+        });
+      
+    } else if(isAdmin) {
+        ctx.reply(`Megaga arizalar qabulini yopib bo'lmaydi. Megaga yoqilmagan!`);
     }
 })
 
 
-bot.command('/shareon', async (ctx) => {
+bot.command('/Mega_1', async (ctx) => {
+    let isAdmin = ctx.message.from.username == process.env.ADMIN;
+    let specialgroupid = await ctx.message.chat.id;
+    let isActive = await Vote.getStatus(specialgroupid)
+    let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
+
+    if(!isActive && isAdmin){
+        specialGroupList.map(async (el) => {
+            let channelid = el.channelid;
+            let votetext = el.votetext;
+            let link = el.link;
+
+            let {message_id} = await telegram.sendMessage(channelid, votetext, {
+                reply_markup: {
+                    inline_keyboard: [
+                        [{
+                            "text": votetext,
+                            "url": link
+                        }]
+                    ]
+                }
+            })
+  
+        })
+    } else if(isAdmin) {
+           
+    }
+})
+
+bot.command('/Mega_2', async (ctx) => {
+    let isAdmin = ctx.message.from.username == process.env.ADMIN;
+    let specialgroupid = await ctx.message.chat.id;
+    let isActive = await Vote.getStatus(specialgroupid)
+    let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
+
+    if(!isActive && isAdmin){
+      
+    } else if(isAdmin) {
+           
+    }
+})
+
+bot.command('/Mega_3', async (ctx) => {
+    let isAdmin = ctx.message.from.username == process.env.ADMIN;
+    let specialgroupid = await ctx.message.chat.id;
+    let isActive = await Vote.getStatus(specialgroupid)
+    let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
+
+    if(!isActive && isAdmin){
+      
+    } else if(isAdmin) {
+           
+    }
+})
+
+bot.command('/Send_mega', async (ctx) => {
             if (ctx.message.from.username == process.env.ADMIN) {
                 let specialgroupid = await ctx.message.chat.id
                 let SpecialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
@@ -158,54 +242,11 @@ bot.command('/shareon', async (ctx) => {
                         }
                     }
                     isdeleted = false;
-                        /*
-                        SpecialGroupList.map(async (el) => {
-                            let channelid = el.channelid;
-                            let votetext = el.votetext;
-                            let link = el.link;
-                            let {
-                                message_id
-                            } = await telegram.sendMessage(channelid, votetext, {
-                                reply_markup: {
-                                    inline_keyboard: [
-                                        [{
-                                            "text": votetext,
-                                            "url": link
-                                        }]
-                                    ]
-                                }
-                            })
-                            console.log(message_id);
-
-                            let messageid = message_id
-                            await Vote.setMessageID(channelid, messageid);
-                        })
-                        */
+                       
                     }
                 })
 
-            bot.command('/qabuloff', async (ctx) => {
-                let username = ctx.message.from.username;
-                if (username == process.env.ADMIN | username == process.env.ADMIN2) {
-                    console.log(isactive)
-                    if (!isactive) {
-                        ctx.reply(`Megaga qabul uchirilgan`);
-                    } else {
-                        let specialgroupid = await ctx.message.chat.id;
-                        let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
 
-                        specialGroupList.map(async (el) => {
-                            let channelid = el.channelid;
-                            let chucbefore = await telegram.getChatMembersCount(channelid);
-                            await ctx.reply(`Megadan oldin ${el.channel} - ${chucbefore} ta`);
-                            await Vote.setChucBefore(channelid, parseInt(chucbefore));
-                        })
-                        await ctx.reply(`Megaga qabul uchirildi`);  
-                        isactive = false;
-
-                    }
-                }
-            })
 
             bot.command('/shareoff', async (ctx) => {
                 if(!isdeleted){
@@ -289,8 +330,15 @@ bot.command('/shareon', async (ctx) => {
             //     })
             // })
 
-            bot.startPolling();
+            // bot.command('/list', async (ctx) => {
+//     if(parseInt(ctx.message.chat.id) > 0){
+//         if (ctx.message.from.username == process.env.ADMIN) {
+//             let list = await Vote.getList();
+//         list.map(async (el)=>{
+//             ctx.reply(`username - @${el.username}\nguruh - ${el.specialgroup}\nkanal - ${el.channel}\nvip - ${el.channel}`)
+//         })
+//         }
+//     }
+// })
 
-            async function isAdmin (username, admins){
-                return await admins.includes(username)? true: false 
-            }
+            bot.startPolling();

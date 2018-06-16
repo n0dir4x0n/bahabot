@@ -18,9 +18,11 @@ module.exports = {
 
     client: 'postgresql',
     connection: {
-      database: 'some',
-      user:     'postgres',
-      password: 'postgres'
+      // port: 5432 ,
+      // host: localhost,
+      database: "some",
+      user:     "postgres",
+      password: "postgres"
     },
     pool: {
       min: 2,

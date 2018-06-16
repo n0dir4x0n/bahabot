@@ -1,33 +1,29 @@
 version: "3"
 
 services:
-  node:
-    image: node:carbon
-    # env_file:
-      # - .ucell-dev.env
-    # ports:
-      # - '8080:8080'
-#      - '9229:9229'
-      # - '5858:5858'
-    # depends_on:
-    #   - db
-    #   - redis
-    #   - mongodb
-    # links:
-    #   - db
-    #   - redis
-    #   - mongodb
-    working_dir: /usr/src/app
+  app:
+    build: .
     volumes:
       - ./:/usr/src/app
-    command: sh -c "./wait-for-it.sh rabbitmq:5672 -- npm run debug"
+    command: sh -c "npm run nodemon"
+    # ports:
+      # - '5433'
   db:
     image: postgres:latest
-    env_file:
-      - .dev.env
-    # volumes:
-    #   - ./.data/db/.data:/var/lib/mysql
-    #   - ./.data/db/conf.d:/etc/mysql/conf.d
-    #   - ./.data/log:/var/log/container
+    environment:
+      - POSTGRES_HOST=localhost
+      - POSTGRES_USER=postgres
+      - POSTGRES_DATABASE=some
+      - POSTGRES_PASSWORD=postgres
     ports:
       - '5432:5432'
+  # db:
+  #   image: postgres:latest
+  #   env_file:
+  #     - .env
+  #   # volumes:
+  #   #   - ./.data/db/.data:/var/lib/mysql
+  #   #   - ./.data/db/conf.d:/etc/mysql/conf.d
+  #   #   - ./.data/log:/var/log/container
+  #   ports:
+  #     - '3030:3000'
