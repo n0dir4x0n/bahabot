@@ -4,7 +4,8 @@ exports.up = function(knex, Promise) {
         knex.schema.createTable('votetype', function (table) {
             table.increments();
             table.string('specialgroupid');
-            table.string('type');
+            table.unique('specialgroupid');
+            table.string('type').defaultTo('1');
             table.timestamps();
          }),
 
