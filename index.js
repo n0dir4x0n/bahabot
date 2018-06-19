@@ -6,6 +6,7 @@ const Telegram = require('telegraf/telegram');
 const telegram = new Telegram(process.env.BOT_TOKEN);
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const Vote = require('./dao/vote');
+const VoteType = require('./dao/votetype');
 // const vote = new Vote();
 // const admin = require('./dao/admin');
 // let admins = require('./admins');
@@ -118,20 +119,21 @@ bot.command('/ping', async (ctx) => {
 // Method is done
 bot.command('/Start_mega', async (ctx) => {
     let isAdmin = await ctx.message.from.username == process.env.ADMIN;
-    let specialgroupid = await ctx.message.chat.id;
-    let isActive = await Vote.getStatus(specialgroupid);
-    let notActiveIsAdmin = isAdmin && !isActive
-    
-    if(await notActiveIsAdmin){
-        await ctx.reply(`Megaga arizalar qabul qilish boshlandi`);
-        await Vote.activate(specialgroupid);
-    } else if(isAdmin) {
-        await ctx.reply(`yoqilgan`);
+    if(isAdmin){
+        let specialgroupid = await ctx.message.chat.id;
+        let isActive = await Vote.getStatus(specialgroupid);
+        if(!isActive){
+            await Vote.activate(specialgroupid);
+            await ctx.reply(`Megaga arizalar qabul qilish boshlandi`);
+        } else {
+            await ctx.reply(`yoqilgan`);
+        }
     }
 })
 
 // Method is done
 bot.command('/Stop_mega', async (ctx) => {
+
     let isAdmin = ctx.message.from.username == process.env.ADMIN;
     let specialgroupid = await ctx.message.chat.id;
     let isActive = await Vote.getStatus(specialgroupid);
@@ -159,30 +161,31 @@ bot.command('/Stop_mega', async (ctx) => {
 
 bot.command('/Mega_1', async (ctx) => {
     let isAdmin = ctx.message.from.username == process.env.ADMIN;
-    let specialgroupid = await ctx.message.chat.id;
-    let isActive = await Vote.getStatus(specialgroupid)
-    let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
+    if(isAdmin){
+        let specialgroupid = await ctx.message.chat.id;
+        let isActive = await Vote.getStatus(specialgroupid)
+        let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
 
-    if(!isActive && isAdmin){
-        specialGroupList.map(async (el) => {
-            let channelid = el.channelid;
-            let votetext = el.votetext;
-            let link = el.link;
+        if(isActive){
+            let voteType = await VoteType.setType(specialgroupid, '1');
 
-            let {message_id} = await telegram.sendMessage(channelid, votetext, {
-                reply_markup: {
-                    inline_keyboard: [
-                        [{
-                            "text": votetext,
-                            "url": link
-                        }]
-                    ]
-                }
+            specialGroupList.map(async (el) => {
+                let channelid = el.channelid;
+                let votetext = el.votetext;
+                let link = el.link;
+    
+                let {message_id} = await telegram.sendMessage(channelid, votetext, {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{
+                                "text": votetext,
+                                "url": link
+                            }]
+                        ]
+                    }
+                })
             })
-  
-        })
-    } else if(isAdmin) {
-           
+        }
     }
 })
 
@@ -193,6 +196,7 @@ bot.command('/Mega_2', async (ctx) => {
     let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
 
     if(!isActive && isAdmin){
+        let voteType = await VoteType.setType(specialgroupid, '2');
       
     } else if(isAdmin) {
            
@@ -206,17 +210,37 @@ bot.command('/Mega_3', async (ctx) => {
     let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
 
     if(!isActive && isAdmin){
-      
+        let voteType = await VoteType.setType(specialgroupid, '3');
+       
     } else if(isAdmin) {
            
     }
 })
 
 bot.command('/Send_mega', async (ctx) => {
-            if (ctx.message.from.username == process.env.ADMIN) {
-                let specialgroupid = await ctx.message.chat.id
-                let SpecialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
+     let isAdmin = ctx.message.from.username == process.env.ADMIN;
 
+        if(isAdmin){
+            let isActive = await Vote.getStatus(specialgroupid);
+
+            if(isActive){
+                let specialgroupid = await ctx.message.chat.id;
+               
+                let specialGroupList = await Vote.getListBySpecialGroupID(specialgroupid);
+                let voteType = await VoteType.getType(specialgroupid);
+
+                     switch(voteType){
+                        case '1': 
+
+                             break;
+                        case '2':
+
+                             break;
+                        case '3':
+
+                            break;
+                        }
+              
                 for (let i = 0; i < SpecialGroupList.length; i++) {
                     let channelid = SpecialGroupList[i].channelid;
                     for (let j = 0; j < SpecialGroupList.length; j++) {
@@ -238,9 +262,9 @@ bot.command('/Send_mega', async (ctx) => {
                         }
                     }
                     isdeleted = false;
-                       
-                    }
-                })
+            }
+        }
+})
 
 
 
