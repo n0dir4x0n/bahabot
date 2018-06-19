@@ -9,6 +9,7 @@ exports.up = function (knex, Promise) {
             table.string('specialgroupid');
             table.text('channel');
             table.text('channelid');
+            table.unique('channelid');
             table.integer('chucbefore');    //channel users count before
             table.integer('chucafter');     //channel users count after
             table.text('link');
