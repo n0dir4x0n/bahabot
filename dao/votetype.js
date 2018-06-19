@@ -1,13 +1,19 @@
 const dao = require('./base');
 
 class VoteTypeDao {
-  static async setType({specialgroupid, type}) {
+  static async createType({specialgroupid}) {
     return await dao.knex
       .insert({
-        specialgroupid,
-        type
+        specialgroupid
       })
       .from('votetype')
+  }
+
+  static async setType({specialgroupid}) {
+    return dao.knex
+      .update({ type })
+      .from('votes')
+      .where({ specialgroupid })
   }
 
 
