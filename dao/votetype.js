@@ -19,13 +19,13 @@ class VoteTypeDao {
 
 
   static async getType(specialgroupid) {
-    const votetype_arr = await dao.knex
-      .select({specialgroupid})
-      .from('votetype')
-      .limit(1);
-    return votetype_arr.map(x => x.type)[0];
+    const arr = await dao.knex
+    .select('type')
+    .from('votetype')
+    .where({specialgroupid})
+    .limit('1');
+    return arr.map(x => x.type)[0];
   }
-
 }
 
 module.exports = VoteTypeDao;
