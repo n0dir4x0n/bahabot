@@ -185,6 +185,12 @@ class VoteDao {
     .from('votes')
   }
 
+  static async deleteMessages(){
+    return dao.knex
+    .del()
+    .from('messages')
+  }
+
   static async setChannelID(channel, channelid){
     return dao.knex
       .update({ channelid })

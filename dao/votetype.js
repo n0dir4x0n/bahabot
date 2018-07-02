@@ -16,8 +16,6 @@ class VoteTypeDao {
       .where({ specialgroupid })
   }
 
-
-
   static async getType(specialgroupid) {
     const arr = await dao.knex
     .select('type')
